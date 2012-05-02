@@ -1,0 +1,159 @@
+0_DISCONNECTED -({SABM} [ext] / {DM} )-> 0_0
+0_0 -(/)-> 0_DISCONNECTED
+
+0_DISCONNECTED -({SABM} [!ext] / va=0; vr=0; vs=0; {UA, CONN_IND} )-> 3_DATA_TRANSFER
+
+
+0_DISCONNECTED -({SABME} [ext] / va=0; vr=0; vs=0; {UA, CONN_IND} )-> 3_DATA_TRANSFER
+
+0_DISCONNECTED -({SABME} [!ext] / {DM} )-> 0_1
+0_1 -(/)-> 0_DISCONNECTED
+
+
+0_DISCONNECTED -({DISC} / {UA} )-> 0_2
+0_2 -(/)-> 0_DISCONNECTED
+
+
+
+
+
+1_AWAITING_CONN -({SABM} [ext] / {DM} )-> 1_0
+1_0 -(/)-> 1_AWAITING_CONN
+
+1_AWAITING_CONN -({SABM} [!ext] / {UA} )-> 1_1
+1_1 -(/)-> 1_AWAITING_CONN
+
+
+1_AWAITING_CONN -({SABME} [ext] / {UA} )-> 1_2
+1_2 -(/)-> 1_AWAITING_CONN
+
+1_AWAITING_CONN -({SABME} [!ext] / {DM} )-> 1_3
+1_3 -(/)-> 1_AWAITING_CONN
+
+
+1_AWAITING_CONN -({DISC} / {DM} )-> 1_4
+1_4 -(/)-> 1_AWAITING_CONN
+
+
+1_AWAITING_CONN -({UA} [pf] / vs=0; vr=0; va=0 {CONN_CONF} )-> 3_DATA_TRANSFER
+
+
+1_AWAITING_CONN -({DM} [pf] / vs=0; vr=0; va=0 {DISC_IND} )-> 0_DISCONNECTED
+
+
+
+
+
+2_AWAITING_DISC -({SABM, SABME} / {DM} )-> 2_0
+2_0 -(/)-> 2_AWAITING_DISC
+
+
+2_AWAITING_DISC -({DISC} / {UA} )-> 2_1
+2_1 -(/)-> 2_AWAITING_DISC
+
+
+2_AWAITING_DISC -({UA} [pf] / {DISC_CONF} )-> 0_DISCONNECTED
+
+
+2_AWAITING_DISC -({DM} [pf] / {DISC_CONF} )-> 0_DISCONNECTED
+
+
+2_AWAITING_DISC -({I, REJ, RNR, RR} [pf] / {DM} )-> 2_2
+2_2 -(/)-> 2_AWAITING_DISC
+
+
+
+
+
+3_DATA_TRANSFER -({SABM} [ext] / {DM} )-> 3_0
+3_0 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({SABM} [!ext] / vs=0; vr=0; va=0 {UA} )-> 3_1
+3_1 -(/)-> 3_DATA_TRANSFER
+
+
+3_DATA_TRANSFER -({SABME} [ext] / vs=0; vr=0; va=0 {UA} )-> 3_2
+3_2 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({SABME} [!ext] / {DM} )-> 3_3
+3_3 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({DISC} / {UA, DISC_IND})-> 0_DISCONNECTED
+
+3_DATA_TRANSFER -({DM} / {DISC_IND} )-> 0_DISCONNECTED
+
+
+3_DATA_TRANSFER -({RNR} [va <= nr; nr <= vs] / va=nr )-> 3_4
+3_4 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({RNR} [va > nr; nr > vs] / )-> 4_FRAME_REJECT
+
+
+3_DATA_TRANSFER -({RR} [va <= nr; nr <= vs] / va=nr )-> 3_5
+3_5 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({RR} [va > nr; nr > vs] / )-> 4_FRAME_REJECT
+
+
+3_DATA_TRANSFER -({REJ} [va <= nr; nr <= vs] / va=nr )-> 3_6
+3_6 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({REJ} [va > nr; nr > vs] / )-> 4_FRAME_REJECT
+
+
+3_DATA_TRANSFER -({I} [va > nr; nr > vs] / )-> 4_FRAME_REJECT
+
+3_DATA_TRANSFER -({I} [va <= nr; nr <= vs; ns == vr] / vr = vr+1 {DATA_IND} )-> 3_7
+3_7 -(/)-> 3_DATA_TRANSFER
+
+3_DATA_TRANSFER -({I} [va <= nr; nr <= vs; ns != vr] / {REJ} )-> 3_8
+3_8 -(/)-> 3_DATA_TRANSFER
+
+
+3_DATA_TRANSFER -({FRMR} / )-> 1_AWAITING_CONN
+
+
+3_DATA_TRANSFER -({ILLEGAL} / )-> 4_FRAME_REJECT
+
+
+
+4_FRAME_REJECT -({SABM} [ext] / {DM} )-> 4_0
+4_0 -(/)-> 4_FRAME_REJECT
+
+4_FRAME_REJECT -({SABM} [!ext] / vs=0; vr=0; va=0 {UA, CONN_IND} )-> 3_DATA_TRANSFER
+
+
+4_FRAME_REJECT -({SABME} [ext] / vs=0; vr=0; va=0 {UA, CONN_IND} )-> 3_DATA_TRANSFER
+
+4_FRAME_REJECT -({SABME} [!ext] / {DM} )-> 4_1
+4_1 -(/)-> 4_FRAME_REJECT
+
+
+
+3_7{888,528}
+3_6{654,547}
+1_1{168,379}
+2_AWAITING_DISC{{114,123}}
+3_5{506,501}
+0_1{229,113}
+1_0{393,367}
+3_1{719,194}
+3_8{936,455}
+0_2{190,311}
+3_4{339,361}
+2_1{36,26}
+3_0{833,300}
+3_2{606,191}
+2_0{244,30}
+4_1{995,247}
+1_4{380,574}
+1_3{195,613}
+4_FRAME_REJECT{{954,77}}
+0_DISCONNECTED{{308,242}}
+2_2{35,294}
+0_0{406,137}
+1_AWAITING_CONN{{266,487}}
+3_DATA_TRANSFER{{659,340}}
+3_3{511,221}
+4_0{710,29}
+1_2{99,537}
